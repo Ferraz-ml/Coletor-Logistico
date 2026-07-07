@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Estilização CSS customizada para Tema Dark Blue Industrial
+# Estilização CSS customizada para Tema Dark Blue Industrial com Alto Contraste
 st.markdown("""
     <style>
     /* Mudar a cor de fundo global da aplicação para Azul Escuro */
@@ -20,9 +20,14 @@ st.markdown("""
     /* Ajustar margens da tela */
     .block-container { padding-top: 1.5rem; padding-bottom: 1rem; }
     
-    /* Títulos e textos em Branco/Prata para contraste */
-    h1 { color: #FFFFFF !important; font-size: 26px !important; font-weight: 700; margin-bottom: 5px; }
-    .sub-tag { color: #8892B0 !important; font-size: 14px; margin-bottom: 20px; }
+    /* Títulos principais CENTRALIZADOS e em Branco */
+    h1 { color: #FFFFFF !important; font-size: 26px !important; font-weight: 700; margin-bottom: 5px; text-align: center; }
+    .sub-tag { color: #8892B0 !important; font-size: 14px; margin-bottom: 20px; text-align: center; }
+    
+    /* Títulos de seções (como Status dos Itens) em Branco Puro */
+    h3 { color: #FFFFFF !important; font-size: 20px !important; font-weight: 600; margin-top: 15px; margin-bottom: 10px; }
+    
+    /* Rótulos dos campos de texto (Labels) */
     label p { color: #FFFFFF !important; font-size: 15px !important; font-weight: 600; }
     .stAlert p { color: #FFFFFF !important; }
     
@@ -44,13 +49,18 @@ st.markdown("""
         color: #FFF3CD;
     }
     
-    /* Inputs visíveis no fundo escuro */
+    /* Inputs com texto digitado em BRANCO para alto contraste ao bipar */
     .stTextInput input {
         font-size: 16px !important;
         font-weight: 600 !important;
         background-color: #0A192F !important;
-        color: #FFFFFF !important;
+        color: #FFFFFF !important; /* Texto digitado agora fica totalmente branco */
         border: 2px solid #64FFDA !important;
+    }
+    
+    /* Cor do texto do placeholder (Dica interna do input) */
+    .stTextInput input::placeholder {
+        color: #495670 !important;
     }
     
     /* Botão de validação destacado (Estilo Ciano Elétrico) */
