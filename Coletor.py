@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import os
 
 # Configuração de página com visual otimizado para coletores (Mobile First)
 st.set_page_config(
@@ -24,7 +25,7 @@ st.markdown("""
     h1 { color: #FFFFFF !important; font-size: 26px !important; font-weight: 700; margin-bottom: 5px; text-align: center; }
     .sub-tag { color: #8892B0 !important; font-size: 14px; margin-bottom: 20px; text-align: center; }
     
-    /* Títulos de seções (como Status dos Itens) em Branco Puro */
+    /* Títulos de seções em Branco Puro */
     h3 { color: #FFFFFF !important; font-size: 20px !important; font-weight: 600; margin-top: 15px; margin-bottom: 10px; }
     
     /* Rótulos dos campos de texto (Labels) */
@@ -54,11 +55,11 @@ st.markdown("""
         font-size: 16px !important;
         font-weight: 600 !important;
         background-color: #0A192F !important;
-        color: #FFFFFF !important; /* Texto digitado agora fica totalmente branco */
+        color: #FFFFFF !important;
         border: 2px solid #64FFDA !important;
     }
     
-    /* Cor do texto do placeholder (Dica interna do input) */
+    /* Cor do texto do placeholder */
     .stTextInput input::placeholder {
         color: #495670 !important;
     }
@@ -84,18 +85,15 @@ st.markdown("""
 st.markdown("<h1>🔍 Checkout de Cases</h1>", unsafe_allow_html=True)
 st.markdown("<p class='sub-tag'>Operação Last-Mile | Validação Independente de Fluxo</p>", unsafe_allow_html=True)
 
-# =====================================================================
-# 1. CARGA DE DADOS (MENU LATERAL)
-# =====================================================================
-st.sidebar.markdown("### 📁 Gerenciamento de Dados")
-arquivo_carregado = st.sidebar.file_uploader("Carregar planilha WMS (.xlsx):", type=["xlsx"])
+# NOME FIXO DO ARQUIVO QUE VOCÊ VAI SUBIR NO GITHUB
+NOME_ARQUIVO_FIXO = "base_wms.xlsx"
 
-@st.cache_data(ttl=60)
-def processar_relatorio_wms(arquivo):
-    if arquivo is None:
+@st.cache_data(ttl=30)  # Atualiza o cache a cada 30 segundos caso você mude o arquivo no GitHub
+def carregar_dados_fixos(caminho_arquivo):
+    if not os.path.exists(caminho_arquivo):
         return {}
     try:
-        df = pd.read_excel(arquivo, header=None, dtype=str)
+        df = pd.read_excel(caminho_arquivo, header=None, dtype=str)
         df = df.dropna(how='all').reset_index(drop=True)
         
         colunas_tecnicas = df.iloc[0].astype(str).str.strip().str.upper().tolist()
@@ -135,20 +133,17 @@ def processar_relatorio_wms(arquivo):
             banco_pedidos[val_pedido][sku_real]['esperado'] += qtd_caixas
             
         return banco_pedidos
-    except Exception as e:
-        st.sidebar.error(f"Erro na estrutura: {e}")
+    except:
         return {}
 
-if arquivo_carregado:
-    banco = processar_relatorio_wms(arquivo_carregado)
-    if banco:
-        st.sidebar.success(f"✅ {len(banco)} pedidos indexados!")
-else:
-    banco = {}
-    st.info("💡 Puxe o menu lateral esquerdo e faça o upload da planilha para começar.")
+# Processa o arquivo fixo que está no repositório
+banco = carregar_dados_fixos(NOME_ARQUIVO_FIXO)
+
+if not banco:
+    st.warning(f"⚠️ Aguardando o upload do arquivo '{NOME_ARQUIVO_FIXO}' no repositório do GitHub para carregar os pedidos.")
 
 # =====================================================================
-# 2. OPERAÇÃO DO COLETOR
+# OPERAÇÃO DO COLETOR
 # =====================================================================
 if banco:
     pedido_input = st.text_input("1️⃣ NÚMERO DO PEDIDO / REMESSA:", key="web_pedido", placeholder="Bipe ou digite o pedido...").strip().replace(' ', '').split('.')[0]
