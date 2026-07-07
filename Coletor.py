@@ -3,60 +3,75 @@ import streamlit as st
 
 # Configuração de página com visual otimizado para coletores (Mobile First)
 st.set_page_config(
-    page_title="Checkout Cego DSV", 
+    page_title="Checkout de Cases DSV", 
     layout="centered", 
     page_icon="🔍",
     initial_sidebar_state="collapsed"
 )
 
-# Estilização CSS customizada para interface profissional/industrial
+# Estilização CSS customizada para Tema Dark Blue Industrial
 st.markdown("""
     <style>
-    /* Remover margens excessivas em telas pequenas */
+    /* Mudar a cor de fundo global da aplicação para Azul Escuro */
+    .stApp {
+        background-color: #0A192F !important;
+    }
+    
+    /* Ajustar margens da tela */
     .block-container { padding-top: 1.5rem; padding-bottom: 1rem; }
     
-    /* Customização de Títulos e Textos */
-    h1 { color: #002D62; font-size: 24px !important; font-weight: 700; margin-bottom: 5px; }
-    .sub-tag { color: #555555; font-size: 14px; margin-bottom: 20px; }
+    /* Títulos e textos em Branco/Prata para contraste */
+    h1 { color: #FFFFFF !important; font-size: 26px !important; font-weight: 700; margin-bottom: 5px; }
+    .sub-tag { color: #8892B0 !important; font-size: 14px; margin-bottom: 20px; }
+    label p { color: #FFFFFF !important; font-size: 15px !important; font-weight: 600; }
+    .stAlert p { color: #FFFFFF !important; }
     
-    /* Estilização dos Cards de SKU */
+    /* Estilização dos Cards de Status */
     .card-ok {
-        background-color: #D4EDDA;
+        background-color: #172A45;
         border-left: 6px solid #28A745;
         padding: 12px;
         border-radius: 6px;
         margin-bottom: 8px;
-        color: #155724;
+        color: #D4EDDA;
     }
     .card-pendente {
-        background-color: #FFF3CD;
+        background-color: #172A45;
         border-left: 6px solid #FFC107;
         padding: 12px;
         border-radius: 6px;
         margin-bottom: 8px;
-        color: #856404;
+        color: #FFF3CD;
     }
     
-    /* Inputs maiores para facilitar toque e bipe */
+    /* Inputs visíveis no fundo escuro */
     .stTextInput input {
         font-size: 16px !important;
         font-weight: 600 !important;
-        border: 2px solid #002D62 !important;
+        background-color: #0A192F !important;
+        color: #FFFFFF !important;
+        border: 2px solid #64FFDA !important;
     }
     
-    /* Botões destacados */
+    /* Botão de validação destacado (Estilo Ciano Elétrico) */
     .stButton button {
-        background-color: #002D62 !important;
-        color: white !important;
+        background-color: #64FFDA !important;
+        color: #0A192F !important;
         width: 100%;
         font-weight: bold;
+        font-size: 16px;
         border-radius: 6px;
         height: 45px;
+        border: none !important;
+    }
+    .stButton button:hover {
+        background-color: #52D1B2 !important;
+        color: #0A192F !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1>🔍 Painel de Checkout Cego</h1>", unsafe_allow_html=True)
+st.markdown("<h1>🔍 Checkout de Cases</h1>", unsafe_allow_html=True)
 st.markdown("<p class='sub-tag'>Operação Last-Mile | Validação Independente de Fluxo</p>", unsafe_allow_html=True)
 
 # =====================================================================
@@ -117,10 +132,10 @@ def processar_relatorio_wms(arquivo):
 if arquivo_carregado:
     banco = processar_relatorio_wms(arquivo_carregado)
     if banco:
-        st.sidebar.success(f"✅ {len(banco)} pedidos indexados com sucesso!")
+        st.sidebar.success(f"✅ {len(banco)} pedidos indexados!")
 else:
     banco = {}
-    st.info("💡 Para iniciar, puxe o menu lateral esquerdo e faça o upload da planilha do dia.")
+    st.info("💡 Puxe o menu lateral esquerdo e faça o upload da planilha para começar.")
 
 # =====================================================================
 # 2. OPERAÇÃO DO COLETOR
@@ -130,14 +145,12 @@ if banco:
 
     if pedido_input:
         if pedido_input in banco:
-            # Inicializa ou altera o pedido na memória da sessão
             if st.session_state.get('pedido_atual') != pedido_input:
                 st.session_state.pedido_atual = pedido_input
                 st.session_state.conferencia = {sku: dict(dados) for sku, dados in banco[pedido_input].items()}
             
             st.markdown("---")
             
-            # Formulário focado para o Bipe do SKU
             with st.form(key="form_bipe_web", clear_on_submit=True):
                 codigo_caixa = st.text_input("2️⃣ SKU DA CAIXA:", placeholder="Bipe o código de barras da caixa...").strip()
                 botao_validar = st.form_submit_button("VALIDAR CAIXA")
@@ -159,11 +172,10 @@ if banco:
                             itens[sku_chave]['bipado'] += 1
                             st.toast(f"Caixa SKU {sku_chave} computada!", icon="✅")
                         else:
-                            st.error(f"⚠️ Atenção: Limite do SKU {sku_chave} já foi preenchido!")
+                            st.error(f"⚠️ Limite do SKU {sku_chave} já atingido!")
                     else:
-                        st.error(f"❌ Erro: O SKU [{codigo_caixa}] não pertence a esta remessa!")
+                        st.error(f"❌ SKU [{codigo_caixa}] não pertence a este pedido!")
             
-            # Exibição do Progresso com os Cards Estilizados
             st.markdown("### 📊 Status dos Itens")
             tudo_concluido = True
             
@@ -171,21 +183,21 @@ if banco:
                 if qtd['bipado'] == qtd['esperado']:
                     st.markdown(f"""
                         <div class='card-ok'>
-                            <strong>📦 SKU: {sku}</strong><br>
+                            <span style='color: #28A745;'>●</span> <strong>📦 SKU: {sku}</strong><br>
                             Status: Concluído ({qtd['bipado']} de {qtd['esperado']} caixas)
                         </div>
                     """, unsafe_allow_html=True)
                 else:
                     st.markdown(f"""
                         <div class='card-pendente'>
-                            <strong>📦 SKU: {sku}</strong><br>
-                            Progresso: <b>{qtd['bipado']}</b> bipadas de <b>{qtd['esperado']}</b> necessárias
+                            <span style='color: #FFC107;'>●</span> <strong>📦 SKU: {sku}</strong><br>
+                            Progresso: <b>{qtd['bipado']}</b> de <b>{qtd['esperado']}</b> caixas conferidas
                         </div>
                     """, unsafe_allow_html=True)
                     tudo_concluido = False
                     
             if tudo_concluido and st.session_state.conferencia:
                 st.balloons()
-                st.success(f"🎉 EXCELENTE! Pedido {pedido_input} está 100% conferido!")
+                st.success(f"🎉 SUCESSO! Pedido {pedido_input} está 100% conferido!")
         else:
-            st.error(f"⚠️ Remessa [{pedido_input}] não localizada ou não pertence ao fluxo de caixas fechadas.")
+            st.error(f"⚠️ Remessa [{pedido_input}] não localizada ou não pertence ao fluxo CASE.")
