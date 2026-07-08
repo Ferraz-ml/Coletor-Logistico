@@ -1,5 +1,5 @@
 import io
-import os  # <-- ADICIONE ESTA LINHA AQUI
+import os
 import re
 import pandas as pd
 import streamlit as st
@@ -11,12 +11,9 @@ st.set_page_config(
     page_title="Checkout de Cases", page_icon="🔍", layout="wide"
 )
 
-# ... resto do código de design e funções ...
-    page_title="Checkout de Cases", page_icon="🔍", layout="wide"
-)
-
 # INJEÇÃO DE DESIGN INTEGRADO: 100% AZUL ESCURO + BANNER 3D AZUL-CÉU
 st.markdown(
+...
     """
     <style>
     /* 1. Altera o fundo de toda a aplicação (Área principal) */
