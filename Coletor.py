@@ -1,86 +1,94 @@
+import io
+import re
 import pandas as pd
 import streamlit as st
-import os
 
-# Configuração de página com visual otimizado para coletores (Mobile First)
+# =========================================================================
+# CONFIGURAÇÃO DA PÁGINA (CHECKOUT DE CASES)
+# =========================================================================
 st.set_page_config(
-    page_title="Checkout de Cases DSV", 
-    layout="centered", 
-    page_icon="🔍",
-    initial_sidebar_state="collapsed"
+    page_title="Checkout de Cases", page_icon="🔍", layout="wide"
 )
 
-# Estilização CSS customizada para Tema Dark Blue Industrial com Alto Contraste
-st.markdown("""
+# INJEÇÃO DE DESIGN INTEGRADO: 100% AZUL ESCURO + BANNER 3D AZUL-CÉU
+st.markdown(
+    """
     <style>
-    /* Mudar a cor de fundo global da aplicação para Azul Escuro */
+    /* 1. Altera o fundo de toda a aplicação (Área principal) */
     .stApp {
-        background-color: #0A192F !important;
+        background-color: #0f172a !important; 
     }
     
-    /* Ajustar margens da tela */
-    .block-container { padding-top: 1.5rem; padding-bottom: 1rem; }
-    
-    /* Títulos principais CENTRALIZADOS e em Branco */
-    h1 { color: #FFFFFF !important; font-size: 26px !important; font-weight: 700; margin-bottom: 5px; text-align: center; }
-    .sub-tag { color: #8892B0 !important; font-size: 14px; margin-bottom: 20px; text-align: center; }
-    
-    /* Títulos de seções em Branco Puro */
-    h3 { color: #FFFFFF !important; font-size: 20px !important; font-weight: 600; margin-top: 15px; margin-bottom: 10px; }
-    
-    /* Rótulos dos campos de texto (Labels) */
-    label p { color: #FFFFFF !important; font-size: 15px !important; font-weight: 600; }
-    .stAlert p { color: #FFFFFF !important; }
-    
-    /* Estilização dos Cards de Status */
-    .card-ok {
-        background-color: #172A45;
-        border-left: 6px solid #28A745;
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 8px;
-        color: #D4EDDA;
+    /* 2. Altera o fundo da barra lateral (Sidebar), caso possua */
+    [data-testid="stSidebar"] {
+        background-color: #1e293b !important; 
     }
-    .card-pendente {
-        background-color: #172A45;
-        border-left: 6px solid #FFC107;
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 8px;
-        color: #FFF3CD;
+
+    /* 3. Ajusta a cor padrão de todos os textos informativos e labels */
+    .stMarkdown, p, span, label, h3 {
+        color: #f1f5f9 !important; 
+    }
+
+    /* 4. Estilização do Banner Centralizado com Efeito 3D e Degradê Azul-Céu */
+    .custom-header {
+        /* Degradê idêntico ao app de Consulta para manter o padrão corporativo */
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 40%, #0f172a 100%);
+        padding: 35px 20px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 30px;
+        
+        /* Combinação de sombras internas para criar o efeito 3D (relevo de luz) */
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 
+                    inset 0 10px 20px rgba(255, 255, 255, 0.1),
+                    inset 0 -5px 15px rgba(0, 0, 0, 0.3),
+                    0 10px 25px rgba(0,0,0,0.5);
+                    
+        border: 1px solid #0284c7;
+        border-bottom: 5px solid #0369a1;
     }
     
-    /* Inputs com texto digitado em BRANCO para alto contraste ao bipar */
-    .stTextInput input {
-        font-size: 16px !important;
-        font-weight: 600 !important;
-        background-color: #0A192F !important;
-        color: #FFFFFF !important;
-        border: 2px solid #64FFDA !important;
+    .custom-title {
+        color: #ffffff !important;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        font-size: 3.2rem;
+        font-weight: 800;
+        letter-spacing: 4px;
+        margin: 0;
+        text-transform: uppercase;
+        text-shadow: 0px 4px 8px rgba(0,0,0,0.5);
     }
     
-    /* Cor do texto do placeholder */
-    .stTextInput input::placeholder {
-        color: #495670 !important;
+    .custom-subtitle {
+        color: #e0f2fe !important; /* Azul claro suave para legibilidade */
+        font-size: 1.05rem;
+        margin-top: 12px;
+        margin-bottom: 0;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-shadow: 0px 2px 4px rgba(0,0,0,0.3);
     }
     
-    /* Botão de validação destacado (Estilo Ciano Elétrico) */
-    .stButton button {
-        background-color: #64FFDA !important;
-        color: #0A192F !important;
-        width: 100%;
-        font-weight: bold;
-        font-size: 16px;
-        border-radius: 6px;
-        height: 45px;
-        border: none !important;
+    /* Extra: Customização dos campos de digitação (Inputs) */
+    div[data-baseweb="input"] {
+        background-color: #1e293b !important;
+        border-color: rgba(2, 132, 199, 0.4) !important;
     }
-    .stButton button:hover {
-        background-color: #52D1B2 !important;
-        color: #0A192F !important;
+    input {
+        color: #ffffff !important;
     }
     </style>
-""", unsafe_allow_html=True)
+    
+    <div class="custom-header">
+        <h1 class="custom-title">🔍 CHECKOUT DE CASES</h1>
+        <p class="custom-subtitle">Operação Last-Mile & Validação Independente de Fluxo</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# O restante da lógica de carregamento de dados fixos e validação de caixas continua abaixo...
 
 st.markdown("<h1>🔍 Checkout de Cases</h1>", unsafe_allow_html=True)
 st.markdown("<p class='sub-tag'>Operação Last-Mile | Validação Independente de Fluxo</p>", unsafe_allow_html=True)
