@@ -13,7 +13,6 @@ st.set_page_config(
 
 # INJEÇÃO DE DESIGN INTEGRADO: 100% AZUL ESCURO + BANNER 3D AZUL-CÉU
 st.markdown(
-...
     """
     <style>
     /* 1. Altera o fundo de toda a aplicação (Área principal) */
