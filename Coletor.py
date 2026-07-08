@@ -1,4 +1,5 @@
 import io
+import os  # <-- ADICIONE ESTA LINHA AQUI
 import re
 import pandas as pd
 import streamlit as st
@@ -7,6 +8,10 @@ import streamlit as st
 # CONFIGURAÇÃO DA PÁGINA (CHECKOUT DE CASES)
 # =========================================================================
 st.set_page_config(
+    page_title="Checkout de Cases", page_icon="🔍", layout="wide"
+)
+
+# ... resto do código de design e funções ...
     page_title="Checkout de Cases", page_icon="🔍", layout="wide"
 )
 
