@@ -1,4 +1,17 @@
-# INJEÇÃO DE DESIGN INTEGRADO ATUALIZADO (MODO ESCURO SEGURO)
+import io
+import os
+import re
+import pandas as pd
+import streamlit as st
+
+# =========================================================================
+# CONFIGURAÇÃO DA PÁGINA (CHECKOUT DE CASES)
+# =========================================================================
+st.set_page_config(
+    page_title="Checkout de Cases", page_icon="🔍", layout="wide"
+)
+
+...# INJEÇÃO DE DESIGN INTEGRADO ATUALIZADO (MODO ESCURO SEGURO)
 st.markdown(
     """
     <style>
