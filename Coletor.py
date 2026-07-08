@@ -1,5 +1,4 @@
 import io
-import os
 import re
 import pandas as pd
 import streamlit as st
@@ -11,31 +10,40 @@ st.set_page_config(
     page_title="Checkout de Cases", page_icon="🔍", layout="wide"
 )
 
-...# INJEÇÃO DE DESIGN INTEGRADO ATUALIZADO (MODO ESCURO SEGURO)
+# INJEÇÃO DE DESIGN INTEGRADO: 100% AZUL ESCURO + BANNER 3D AZUL-CÉU
 st.markdown(
     """
     <style>
-    /* 1. Força o fundo escuro na aplicação principal */
+    /* 1. Altera o fundo de toda a aplicação (Área principal) */
     .stApp {
         background-color: #0f172a !important; 
     }
     
-    /* 2. Mantém a barra lateral integrada */
+    /* 2. Altera o fundo da barra lateral (Sidebar), caso possua */
     [data-testid="stSidebar"] {
         background-color: #1e293b !important; 
     }
 
-    /* 3. Estilização do Banner Centralizado com Efeito 3D (Azul-Céu) */
+    /* 3. Ajusta a cor padrão de todos os textos informativos e labels */
+    .stMarkdown, p, span, label, h3 {
+        color: #f1f5f9 !important; 
+    }
+
+    /* 4. Estilização do Banner Centralizado com Efeito 3D e Degradê Azul-Céu */
     .custom-header {
+        /* Degradê idêntico ao app de Consulta para manter o padrão corporativo */
         background: linear-gradient(135deg, #0284c7 0%, #0369a1 40%, #0f172a 100%);
         padding: 35px 20px;
         border-radius: 12px;
         text-align: center;
         margin-bottom: 30px;
+        
+        /* Combinação de sombras internas para criar o efeito 3D (relevo de luz) */
         box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 
                     inset 0 10px 20px rgba(255, 255, 255, 0.1),
                     inset 0 -5px 15px rgba(0, 0, 0, 0.3),
                     0 10px 25px rgba(0,0,0,0.5);
+                    
         border: 1px solid #0284c7;
         border-bottom: 5px solid #0369a1;
     }
@@ -52,7 +60,7 @@ st.markdown(
     }
     
     .custom-subtitle {
-        color: #e0f2fe !important;
+        color: #e0f2fe !important; /* Azul claro suave para legibilidade */
         font-size: 1.05rem;
         margin-top: 12px;
         margin-bottom: 0;
@@ -62,21 +70,13 @@ st.markdown(
         text-shadow: 0px 2px 4px rgba(0,0,0,0.3);
     }
     
-    /* 4. Customização Segura dos Inputs: Fundo escuro e texto sempre legível */
+    /* Extra: Customização dos campos de digitação (Inputs) */
     div[data-baseweb="input"] {
         background-color: #1e293b !important;
-        border-color: rgba(2, 132, 199, 0.5) !important;
+        border-color: rgba(2, 132, 199, 0.4) !important;
     }
-    
-    /* Garante que o texto digitado e o placeholder tenham contraste perfeito */
     input {
         color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
-    }
-    
-    /* Ajusta os rótulos (labels) dos inputs acima das caixas para não sumirem */
-    label p {
-        color: #f1f5f9 !important;
     }
     </style>
     
