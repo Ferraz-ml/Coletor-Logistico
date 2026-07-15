@@ -1,4 +1,3 @@
-import io
 import os
 import re
 import pandas as pd
@@ -11,9 +10,8 @@ st.set_page_config(
     page_title="Checkout de Cases", page_icon="🔍", layout="wide"
 )
 
-# INJEÇÃO DE DESIGN INTEGRADO: 100% AZUL ESCURO + BANNER 3D AZUL-CÉU
+# INJEÇÃO DE DESIGN INTEGRADO: 100% AZUL ESCURO + BANNER 3D AZUL-CÉU + CARDS DE STATUS
 st.markdown(
-
     """
     <style>
     /* 1. Altera o fundo de toda a aplicação (Área principal) */
@@ -33,14 +31,12 @@ st.markdown(
 
     /* 4. Estilização do Banner Centralizado com Efeito 3D e Degradê Azul-Céu */
     .custom-header {
-        /* Degradê idêntico ao app de Consulta para manter o padrão corporativo */
         background: linear-gradient(135deg, #0284c7 0%, #0369a1 40%, #0f172a 100%);
         padding: 35px 20px;
         border-radius: 12px;
         text-align: center;
         margin-bottom: 30px;
         
-        /* Combinação de sombras internas para criar o efeito 3D (relevo de luz) */
         box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 
                     inset 0 10px 20px rgba(255, 255, 255, 0.1),
                     inset 0 -5px 15px rgba(0, 0, 0, 0.3),
@@ -62,7 +58,7 @@ st.markdown(
     }
     
     .custom-subtitle {
-        color: #e0f2fe !important; /* Azul claro suave para legibilidade */
+        color: #e0f2fe !important; 
         font-size: 1.05rem;
         margin-top: 12px;
         margin-bottom: 0;
@@ -80,6 +76,33 @@ st.markdown(
     input {
         color: #ffffff !important;
     }
+
+    /* ==========================================
+       NOVO: CARDS DE STATUS (VERDE E PENDENTE)
+       ========================================== */
+    .card-ok {
+        background-color: #064e3b !important; /* Fundo verde escuro para combinar com o tema escuro */
+        border: 1px solid #22c55e !important; /* Borda verde brilhante */
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    .card-ok strong {
+        color: #4ade80 !important; /* Destaque no texto do SKU */
+    }
+
+    .card-pendente {
+        background-color: #1e293b !important; /* Fundo cinza azulado escuro */
+        border: 1px solid #eab308 !important; /* Borda amarela/alerta */
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    .card-pendente strong {
+        color: #facc15 !important; /* Destaque no texto do SKU pendente */
+    }
     </style>
     
     <div class="custom-header">
@@ -90,15 +113,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# O restante da lógica de carregamento de dados fixos e validação de caixas continua abaixo...
-
-st.markdown("<h1>🔍 Checkout de Cases</h1>", unsafe_allow_html=True)
-st.markdown("<p class='sub-tag'>Operação Last-Mile | Validação Independente de Fluxo</p>", unsafe_allow_html=True)
-
 # NOME FIXO DO ARQUIVO QUE VOCÊ VAI SUBIR NO GITHUB
 NOME_ARQUIVO_FIXO = "base_wms.xlsx"
 
-@st.cache_data(ttl=30)  # Atualiza o cache a cada 30 segundos caso você mude o arquivo no GitHub
+@st.cache_data(ttl=30)  # Atualiza o cache a cada 30 segundos
 def carregar_dados_fixos(caminho_arquivo):
     if not os.path.exists(caminho_arquivo):
         return {}
@@ -198,14 +216,14 @@ if banco:
                 if qtd['bipado'] == qtd['esperado']:
                     st.markdown(f"""
                         <div class='card-ok'>
-                            <span style='color: #28A745;'>●</span> <strong>📦 SKU: {sku}</strong><br>
+                            <span style='color: #22c55e;'>●</span> <strong>📦 SKU: {sku}</strong><br>
                             Status: Concluído ({qtd['bipado']} de {qtd['esperado']} caixas)
                         </div>
                     """, unsafe_allow_html=True)
                 else:
                     st.markdown(f"""
                         <div class='card-pendente'>
-                            <span style='color: #FFC107;'>●</span> <strong>📦 SKU: {sku}</strong><br>
+                            <span style='color: #eab308;'>●</span> <strong>📦 SKU: {sku}</strong><br>
                             Progresso: <b>{qtd['bipado']}</b> de <b>{qtd['esperado']}</b> caixas conferidas
                         </div>
                     """, unsafe_allow_html=True)
